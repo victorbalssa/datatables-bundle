@@ -1,5 +1,5 @@
 {
-    "name": "omines/datatables-bundle",
+    "name": "victorbalssa/datatables-bundle-with-regex",
     "type": "symfony-bundle",
     "description": "Symfony DataTables Bundle with native Doctrine ORM, Elastica and MongoDB support",
     "keywords": ["symfony","jquery","datatable", "datatables", "bundle", "doctrine", "orm", "elastica", "mongodb"],
