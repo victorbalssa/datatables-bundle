@@ -114,9 +114,10 @@ class DataTableState
         foreach ($parameters->all()['columns'] ?? [] as $key => $search) {
             $column = $this->dataTable->getColumn((int) $key);
             $value = $this->isInitial ? $search : $search['search']['value'];
+            $isRegex = $this->isInitial ? false : $search['search']['regex'];
 
             if ($column->isSearchable() && ('' !== trim($value))) {
-                $this->setColumnSearch($column, $value);
+                $this->setColumnSearch($column, $value, $isRegex === 'true' ?? false);
             }
         }
     }

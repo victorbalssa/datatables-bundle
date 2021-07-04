@@ -39,6 +39,7 @@ class SearchCriteriaProvider implements QueryBuilderProcessorInterface
             /** @var AbstractColumn $column */
             $column = $searchInfo['column'];
             $search = $searchInfo['search'];
+            $isRegex = $searchInfo['regex'];
 
             if ('' !== trim($search)) {
                 if (null !== ($filter = $column->getFilter())) {
@@ -46,8 +47,16 @@ class SearchCriteriaProvider implements QueryBuilderProcessorInterface
                         continue;
                     }
                 }
-                $search = $queryBuilder->expr()->literal($search);
-                $queryBuilder->andWhere(new Comparison($column->getField(), $column->getOperator(), $search));
+                if ($isRegex) {
+                    $search = $queryBuilder->expr()->literal($search);
+                    $queryBuilder->andWhere('REGEXP('.$column->getField().', '.$search.') = 1');
+                } elseif (str_contains($search, 'search_date_')) {
+                    $search = str_replace('search_date_', '', $search);
+                    $queryBuilder->andWhere('DATE('.$column->getField().') = DATE(\''.$search.'\')');
+                } else {
+                    $search = $queryBuilder->expr()->literal($search);
+                    $queryBuilder->andWhere(new Comparison($column->getField(), $column->getOperator(), $search));
+                }
             }
         }
     }
@@ -58,9 +67,15 @@ class SearchCriteriaProvider implements QueryBuilderProcessorInterface
             $expr = $queryBuilder->expr();
             $comparisons = $expr->orX();
             foreach ($state->getDataTable()->getColumns() as $column) {
-                if ($column->isGlobalSearchable() && !empty($column->getField()) && $column->isValidForSearch($globalSearch)) {
-                    $comparisons->add(new Comparison($column->getLeftExpr(), $column->getOperator(),
-                        $expr->literal($column->getRightExpr($globalSearch))));
+                if ($column->isGlobalSearchable() && !empty($column->getField()) && $column->isValidForSearch(
+                        $globalSearch
+                    )) {
+                    $comparisons->add(
+                        new Comparison(
+                            $column->getLeftExpr(), $column->getOperator(),
+                            $expr->literal($column->getRightExpr($globalSearch))
+                        )
+                    );
                 }
             }
             $queryBuilder->andWhere($comparisons);
