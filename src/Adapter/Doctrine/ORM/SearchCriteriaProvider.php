@@ -53,7 +53,7 @@ class SearchCriteriaProvider implements QueryBuilderProcessorInterface
                 } elseif (str_contains($search, 'search_between_date_')) {
                     $search = str_replace('search_between_date_', '', $search);
                     $search = explode('|',$search);
-                    $queryBuilder->andWhere('DATE('.$column->getField().') >= DATE(\''.$search[0].'\') && DATE('.$column->getField().') <= DATE(\''.$search[1].'\')');
+                    $queryBuilder->andWhere('DATE('.$column->getField().') >= DATE(\''.$search[0].'\') AND DATE('.$column->getField().') <= DATE(\''.$search[1].'\')');
                 } elseif (str_contains($search, 'search_date_')) {
                     $search = str_replace('search_date_', '', $search);
                     $queryBuilder->andWhere('DATE('.$column->getField().') = DATE(\''.$search.'\')');
