@@ -49,14 +49,14 @@ class SearchCriteriaProvider implements QueryBuilderProcessorInterface
                 }
                 if ($isRegex) {
                     $search = $queryBuilder->expr()->literal($search);
-                    $queryBuilder->andWhere('REGEXP('.$column->getField().', '.$search.') = 1');
+                    $queryBuilder->andWhere($column->getField().' REGEXP '.$search);
                 } elseif (str_contains($search, 'search_between_date_')) {
                     $search = str_replace('search_between_date_', '', $search);
                     $search = explode('|',$search);
-                    $queryBuilder->andWhere('DATE('.$column->getField().') >= DATE(\''.$search[0].'\') AND DATE('.$column->getField().') <= DATE(\''.$search[1].'\')');
+                    $queryBuilder->andWhere($column->getField().' >= \''.$search[0].'\' AND '.$column->getField().' <= \''.$search[1].'\'');
                 } elseif (str_contains($search, 'search_date_')) {
                     $search = str_replace('search_date_', '', $search);
-                    $queryBuilder->andWhere('DATE('.$column->getField().') = DATE(\''.$search.'\')');
+                    $queryBuilder->andWhere($column->getField().' = \''.$search.'\'');
                 } else {
                     $search = $queryBuilder->expr()->literal($search);
                     $queryBuilder->andWhere(new Comparison($column->getField(), $column->getOperator(), $search));
